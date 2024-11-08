@@ -3,16 +3,18 @@ import { Play, Pause } from 'lucide-react';
 
 const MohrCircleVisualization = () => {
   const [isAnimating, setIsAnimating] = useState(true);
+  // Updated initial strains based on the given results
   const [strains, setStrains] = useState({
-    normalX: 0.2,
-    normalY: 0.1,
-    shearXY: 0.15
+    normalX: 2.0,  // εx = 2.0 μm/m
+    normalY: 0.2,  // εy = 0.2 μm/m
+    shearXY: 1.81/2  // γxy/2 = 1.81/2 μm/m (using half of γmax since we work with γ/2)
   });
   const [currentStrains, setCurrentStrains] = useState({
     normal: 0,
     shear: 0
   });
-  const [angle, setAngle] = useState(0);
+  // Initialize angle to match the given principal strain angle (-2.38 degrees)
+  const [angle, setAngle] = useState(-2.38 * Math.PI / 180);
   const canvasRef = useRef(null);
   const animationRef = useRef(null);
   const lastUpdateTimeRef = useRef(0);
@@ -154,7 +156,7 @@ const MohrCircleVisualization = () => {
   };
 
   return (
-    <div className="h-screen w-screen overflow-hidden bg-gray-50">
+    <div className="h-screen w-screen bg-gray-50">
       <div ref={containerRef} className="h-full w-full p-4 flex flex-col">
         <div className="bg-white rounded-lg shadow-lg p-4 flex-grow flex flex-col">
           <h2 className="text-2xl font-bold text-gray-800 mb-4">Mohr's Circle - Strain Analysis</h2>
@@ -162,7 +164,7 @@ const MohrCircleVisualization = () => {
           {/* Input Controls */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
             <div className="space-y-2">
-              <label className="block text-sm font-medium text-gray-700">Normal Strain X (εx)</label>
+              <label className="block text-sm font-medium text-gray-700">Normal Strain X (εx) [μm/m]</label>
               <input
                 type="number"
                 step="0.1"
@@ -172,7 +174,7 @@ const MohrCircleVisualization = () => {
               />
             </div>
             <div className="space-y-2">
-              <label className="block text-sm font-medium text-gray-700">Normal Strain Y (εy)</label>
+              <label className="block text-sm font-medium text-gray-700">Normal Strain Y (εy) [μm/m]</label>
               <input
                 type="number"
                 step="0.1"
@@ -182,7 +184,7 @@ const MohrCircleVisualization = () => {
               />
             </div>
             <div className="space-y-2">
-              <label className="block text-sm font-medium text-gray-700">Shear Strain γxy/2</label>
+              <label className="block text-sm font-medium text-gray-700">Shear Strain γxy/2 [μm/m]</label>
               <input
                 type="number"
                 step="0.1"
@@ -218,27 +220,27 @@ const MohrCircleVisualization = () => {
                   <thead className="bg-gray-50">
                     <tr>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Parameter</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Value</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Angle</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Value [μm/m]</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Angle [°]</th>
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
                     <tr>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Normal Strain (ε)</td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {currentStrains.normal.toFixed(2)}
+                        {currentStrains.normal.toFixed(3)}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {((angle * 180) / Math.PI).toFixed(1)}°
+                        {((angle * 180) / Math.PI).toFixed(2)}°
                       </td>
                     </tr>
                     <tr>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Shear Strain (γ/2)</td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {currentStrains.shear.toFixed(2)}
+                        {currentStrains.shear.toFixed(3)}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {((angle * 180) / Math.PI + 90).toFixed(1)}°
+                        {((angle * 180) / Math.PI + 90).toFixed(2)}°
                       </td>
                     </tr>
                   </tbody>
@@ -252,6 +254,7 @@ const MohrCircleVisualization = () => {
                 <p>• Red Dashed Line: Radius Vector</p>
                 <p>• Animation Period: 30 seconds per revolution</p>
                 <p>• Angle is measured counterclockwise from horizontal</p>
+                <p>• All strain values are in μm/m (microstrain)</p>
               </div>
             </div>
           </div>
